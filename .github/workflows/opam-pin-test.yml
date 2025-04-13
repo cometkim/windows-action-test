@@ -14,9 +14,7 @@ jobs:
 
       - name: Winget install OPAM
         run: |
-          winget install --accept-source-agreements --accept-package-agreements \ 
-            Git.Git \
-            OCaml.opam
+          winget install --accept-source-agreements --accept-package-agreements Git.Git OCaml.opam
 
       - name: OPAM available?
         run: opam --help
