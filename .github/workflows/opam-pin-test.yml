@@ -23,4 +23,7 @@ jobs:
           }
 
       - name: OPAM available?
-        run: opam --help
+        run: opam --version
+
+      - name: OPAM pin test
+        run: opam pin add flow_parser https://github.com/rescript-lang/flow.git#d35a6f5c0cc219e85bbcb822d6f19ed9b2ec3448
