@@ -26,7 +26,7 @@ jobs:
         run: opam --version
 
       - name: OPAM init
-        run: opam init --yes --disable-sandboxing '--cygwin-location=C:\msys64'
+        run: opam init --yes --confirm-level=unsafe-yes --disable-sandboxing '--cygwin-location=C:\msys64'
 
       - name: OPAM pin test
         run: opam pin add flow_parser https://github.com/rescript-lang/flow.git#d35a6f5c0cc219e85bbcb822d6f19ed9b2ec3448
