@@ -15,6 +15,12 @@ jobs:
       - name: Winget install OPAM
         run: |
           winget install --accept-source-agreements --accept-package-agreements Git.Git OCaml.opam
+          $userPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+          $userPath.Split(';') | ForEach-Object {
+            if ($_ -and (Test-Path $_)) {
+              Add-Content -Path $env:GITHUB_PATH -Value $_
+            }
+          }
 
       - name: OPAM available?
         run: opam --help
