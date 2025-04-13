@@ -1,0 +1,19 @@
+name: Windows test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  install-opam:
+    runs-on: windows-2025
+    steps:
+      - name: Winget available?
+        run: winget --help
+
+      - name: Winget install OPAM
+        run: winget install Git.Git OCaml.opam
+
+      - name: OPAM available?
+        run: opam --help
