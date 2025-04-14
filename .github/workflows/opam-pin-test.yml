@@ -22,6 +22,15 @@ jobs:
             }
           }
 
+      # See https://github.com/ocaml/opam/issues/6472#issuecomment-2801536005
+      - name: Allow long paths in the filesystem
+        run: |
+          # May not available in actions
+          # $registryPath = "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem"
+          # $propertyName = "LongPathsEnabled"
+          # Set-ItemProperty -Path $registryPath -Name $propertyName -Type DWord -Value 1
+          git config --system core.longpaths true
+
       - name: OPAM available?
         run: opam --version
 
