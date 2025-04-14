@@ -1,4 +1,4 @@
-name: Windows test
+name: OCaml on Windows test
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  install-opam:
+  ocaml-test:
     runs-on: windows-2025
     steps:
       - name: Winget available?
@@ -37,8 +37,8 @@ jobs:
       - name: OPAM init
         run: opam init --yes --confirm-level=unsafe-yes --disable-sandboxing --shell-setup '--cygwin-location=C:\msys64'
 
-      - name: OPAM pin test
-        run: opam pin add flow_parser https://github.com/rescript-lang/flow.git#d35a6f5c0cc219e85bbcb822d6f19ed9b2ec3448
+      # - name: OPAM pin test
+      #   run: opam pin add flow_parser https://github.com/rescript-lang/flow.git#d35a6f5c0cc219e85bbcb822d6f19ed9b2ec3448
 
       - name: Checkout
         uses: actions/checkout@v4
