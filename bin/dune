@@ -1,0 +1,4 @@
+(executable
+ (public_name windows-action-test)
+ (name main)
+ (libraries windows_action_test))
