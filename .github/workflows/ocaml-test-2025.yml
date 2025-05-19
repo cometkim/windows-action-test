@@ -1,0 +1,87 @@
+name: OCaml on Windows test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ocaml-test:
+    strategy:
+      fail-fast: false
+      matrix: 
+        os: [windows-latest, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/cache@v4
+        with:
+          path: "C:\\opamroot.vhdx"
+          key: opamroot-v1
+
+      - uses: samypr100/setup-dev-drive@v3
+        with:
+          drive-size: 4GB
+          drive-format: ReFS
+          drive-type: Dynamic
+          drive-path: opamroot.vhdx
+          mount-if-exists: true
+          native-dev-drive: true
+          env-mapping: |
+            OPAMROOT,{{ DEV_DRIVE }}/.opam
+
+      - name: Winget available?
+        run: winget --help
+
+      - name: Winget install OPAM
+        run: |
+          winget install --accept-source-agreements --accept-package-agreements -e --id OCaml.opam
+          $userPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+          $userPath.Split(';') | ForEach-Object {
+            if ($_ -and (Test-Path $_)) {
+              Add-Content -Path $env:GITHUB_PATH -Value $_
+            }
+          }
+
+      # See https://github.com/ocaml/opam/issues/6472#issuecomment-2801536005
+      - name: Allow long paths in the filesystem
+        run: |
+          # May not available in actions
+          # $registryPath = "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem"
+          # $propertyName = "LongPathsEnabled"
+          # Set-ItemProperty -Path $registryPath -Name $propertyName -Type DWord -Value 1
+          git config --system core.longpaths true
+
+      - name: OPAM available?
+        run: opam --version
+
+      - name: OPAM init
+        run: |
+          opam init `
+            --yes `
+            --confirm-level=unsafe-yes `
+            --bare `
+            --bypass-checks `
+            --disable-completion `
+            --disable-shell-hook `
+            --disable-sandboxing `
+            --cygwin-local-install `
+            --cygwin-location="C:\\msys64" `
+            --no-opamrc `
+            --assume-depexts
+          # permanently disable handling of system packages
+          opam option depext=false
+
+      # - name: OPAM pin test
+      #   run: opam pin add flow_parser https://github.com/rescript-lang/flow.git#d35a6f5c0cc219e85bbcb822d6f19ed9b2ec3448
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: OPAM create switch
+        run: opam switch create . 5.3.0
+
+      - name: OPAM install
+        run: opam install . --deps-only
+
+      - name: dune build test
+        run: opam exec -- dune build
