@@ -7,8 +7,17 @@ on:
 
 jobs:
   ocaml-test:
-    runs-on: windows-2025
+    strategy:
+      fail-fast: false
+      matrix: 
+        os: [windows-latest, windows-2025]
+    runs-on: ${{ matrix.os }}
     steps:
+      - name: Move TEMP dir
+        run: |
+          mkdir "D:\\Temp"
+          echo "TEMP=D:\\Temp" >> $env:GITHUB_ENV
+
       - uses: actions/cache@v4
         with:
           path: opamroot.vhdx
