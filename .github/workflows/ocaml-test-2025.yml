@@ -82,7 +82,7 @@ jobs:
       # - name: OPAM pin test
       #   run: opam pin add flow_parser https://github.com/rescript-lang/flow.git#d35a6f5c0cc219e85bbcb822d6f19ed9b2ec3448
       - name: OPAM create switch
-        run: opam switch --no-install --packages=ocaml-base-compiler.5.3.0 create
+        run: opam switch --no-install --packages=ocaml-base-compiler.5.3.0 create ${{ github.repository }}
 
       - name: Checkout
         uses: actions/checkout@v4
