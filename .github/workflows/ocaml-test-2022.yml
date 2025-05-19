@@ -74,8 +74,8 @@ jobs:
             --confirm-level=unsafe-yes `
             --bare `
             --bypass-checks `
+            --enable-shell-hook `
             --disable-completion `
-            --disable-shell-hook `
             --disable-sandboxing `
             --cygwin-local-install `
             --cygwin-location="$env:MSYS2_ROOT" `
@@ -85,13 +85,13 @@ jobs:
           opam option depext=false
 
       - name: OPAM create switch
-        run: opam switch --no-install --packages=ocaml-base-compiler.5.3.0 create ${{ github.repository }}
+        run: opam switch --no-install --packages=ocaml-base-compiler.5.3.0 create
 
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: OPAM install
-        run: opam install . --deps-only
+        run: opam install . --deps-only --with-test --with-dev-setup
 
       - name: dune build test
         run: opam exec -- dune build
