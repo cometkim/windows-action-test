@@ -27,6 +27,7 @@ jobs:
           drive-path: "D:\\opamroot.vhdx"
           mount-if-exists: true
           native-dev-drive: true
+          trusted-dev-drive: true
           env-mapping: |
             OPAMROOT,{{ DEV_DRIVE }}/.opam
             MSYS2_ROOT,{{ DEV_DRIVE }}/msys64
