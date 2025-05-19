@@ -62,6 +62,10 @@ jobs:
       - name: OPAM available?
         run: opam --version
 
+      - name: OPAM explicit concurrency
+        run: |
+          echo "OPAMJOBS=4" >> $env:GITHUB_ENV
+
       - name: OPAM init
         run: |
           opam init `
