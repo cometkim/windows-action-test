@@ -16,7 +16,7 @@ jobs:
 
       - uses: samypr100/setup-dev-drive@v3
         with:
-          drive-size: 4GB
+          drive-size: 8GB
           drive-format: ReFS
           drive-type: Dynamic
           drive-path: opamroot.vhdx
@@ -24,6 +24,17 @@ jobs:
           native-dev-drive: true
           env-mapping: |
             OPAMROOT,{{ DEV_DRIVE }}/.opam
+            MSYS2_ROOT,{{ DEV_DRIVE }}/msys64
+
+      - name: Copy MSYS2 to Dev Drive
+        run: |
+          $devDrive = $env:MSYS2_ROOT
+          Write-Host "Copying MSYS2 to $devDrive..."
+          $parentDir = Split-Path -Parent $devDrive
+          if (-not (Test-Path $parentDir)) {
+            New-Item -ItemType Directory -Force -Path $parentDir
+          }
+          Copy-Item -Path "C:\\msys64" -Destination $devDrive -Recurse -Force
 
       - name: Winget available?
         run: winget --help
@@ -61,7 +72,7 @@ jobs:
             --disable-shell-hook `
             --disable-sandboxing `
             --cygwin-local-install `
-            --cygwin-location="C:\\msys64" `
+            --cygwin-location="$env:MSYS2_ROOT" `
             --no-opamrc `
             --assume-depexts
           # permanently disable handling of system packages
@@ -69,12 +80,11 @@ jobs:
 
       # - name: OPAM pin test
       #   run: opam pin add flow_parser https://github.com/rescript-lang/flow.git#d35a6f5c0cc219e85bbcb822d6f19ed9b2ec3448
+      - name: OPAM create switch
+        run: opam switch --no-install --packages=ocaml-base-compiler.5.3.0 create ${{ github.repository }}
 
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: OPAM create switch
-        run: opam switch create . 5.3.0
 
       - name: OPAM install
         run: opam install . --deps-only
