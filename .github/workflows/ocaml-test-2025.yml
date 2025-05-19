@@ -92,7 +92,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: OPAM install
-        run: opam install . --deps-only --with-test --with-dev-setup
+        run: opam install . --yes --deps-only --with-test --with-dev-setup
 
       - name: dune build test
         run: opam exec -- dune build
