@@ -15,6 +15,7 @@ jobs:
           echo "TEMP=D:\\Temp" >> $env:GITHUB_ENV
       
       - uses: actions/cache@v4
+        id: drive-cache
         with:
           path: "D:\\opamroot.vhdx"
           key: opamroot-v1
@@ -33,6 +34,7 @@ jobs:
             MSYS2_ROOT,{{ DEV_DRIVE }}/msys64
 
       - name: Copy MSYS2 to Dev Drive
+        if: steps.drive-cache.outputs.cache-hit != 'true'
         run: |
           $devDrive = $env:MSYS2_ROOT
           Write-Host "Copying MSYS2 to $devDrive..."
@@ -68,6 +70,7 @@ jobs:
         run: opam --version
 
       - name: OPAM init
+        if: steps.drive-cache.outputs.cache-hit != 'true'
         run: |
           opam init `
             --yes `
@@ -85,12 +88,18 @@ jobs:
           opam option depext=false
 
       - name: OPAM create switch
+        if: steps.drive-cache.outputs.cache-hit != 'true'
         run: opam switch --no-install --packages=ocaml-base-compiler.5.3.0 create ${{ github.repository }}
+
+      - name: OPAM reset env
+        if: steps.drive-cache.outputs.cache-hit == 'true'
+        run: (& opam env --switch=${{ github.repository }}) -split '\r?\n' | ForEach-Object { Invoke-Expression $_ }
 
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: OPAM install
+        if: steps.drive-cache.outputs.cache-hit == 'true'
         run: opam install . --yes --deps-only --with-test --with-dev-setup
 
       - name: dune build test
