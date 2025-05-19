@@ -14,7 +14,7 @@ jobs:
 
       - name: Winget install OPAM
         run: |
-          winget install --accept-source-agreements --accept-package-agreements Git.Git OCaml.opam
+          winget install --accept-source-agreements --accept-package-agreements -e --id OCaml.opam
           $userPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
           $userPath.Split(';') | ForEach-Object {
             if ($_ -and (Test-Path $_)) {
@@ -35,13 +35,30 @@ jobs:
         run: opam --version
 
       - name: OPAM init
-        run: opam init --yes --confirm-level=unsafe-yes --disable-sandboxing --shell-setup '--cygwin-location=C:\msys64'
+        run: |
+          opam init `
+            --yes `
+            --confirm-level=unsafe-yes `
+            --bare `
+            --bypass-checks `
+            --disable-completion `
+            --disable-shell-hook `
+            --disable-sandboxing `
+            --cygwin-local-install `
+            --cygwin-location="C:\msys64" `
+            --no-opamrc `
+            --assume-depexts
+          # permanently disable handling of system packages
+          opam option depext=false
 
       # - name: OPAM pin test
       #   run: opam pin add flow_parser https://github.com/rescript-lang/flow.git#d35a6f5c0cc219e85bbcb822d6f19ed9b2ec3448
 
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: OPAM create switch
+        run: opam switch create . 5.3.0
 
       - name: OPAM install
         run: opam install . --deps-only
