@@ -69,7 +69,7 @@ jobs:
 
       - name: OPAM explicit concurrency
         run: |
-          echo "OPAMJOBS=1" >> $env:GITHUB_ENV
+          echo "OPAMJOBS=2" >> $env:GITHUB_ENV
 
       - name: OPAM init
         run: |
